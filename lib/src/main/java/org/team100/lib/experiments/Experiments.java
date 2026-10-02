@@ -4,8 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.team100.lib.config.Identity;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,31 +21,39 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Experiments.INSTANCE.show();
  */
 public class Experiments {
-    public static final Experiments INSTANCE = new Experiments(Identity.instance);
+    public static final Experiments INSTANCE = new Experiments();
 
     /** These experiments are enabled by default. */
     private final Set<Experiment> m_defaults = Set.of(
-            Experiment.HeedVision);
+            Experiment.IncludeFrictionFeedForward,
+            Experiment.IncludeVelocityFeedForward,
+            Experiment.IncludeTorqueFeedForward);
 
     /** Key = experiment, value = enabled. */
     private final Map<Experiment, Boolean> m_enabled;
 
-    private Experiments(Identity identity) {
+    private Experiments() {
         m_enabled = new EnumMap<>(Experiment.class);
+        System.out.println("===============================================================");
+        System.out.println("== EXPERIMENTS");
         for (Experiment e : Experiment.values()) {
             SendableChooser<Boolean> widget = ExperimentChooser.get(e.name());
+            System.out.printf("== %s (%s): ", e.name(), e.description);
             if (m_defaults.contains(e)) {
                 widget.setDefaultOption(on(e), true);
                 widget.addOption(off(e), false);
                 m_enabled.put(e, true);
+                System.out.println("ON");
             } else {
                 widget.addOption(on(e), true);
                 widget.setDefaultOption(off(e), false);
                 m_enabled.put(e, false);
+                System.out.println("OFF");
             }
             widget.onChange(selected -> m_enabled.put(e, selected));
             SmartDashboard.putData(widget);
         }
+        System.out.println("===============================================================");
     }
 
     /** Load the experiments class and thus the chooser. */
