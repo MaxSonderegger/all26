@@ -112,7 +112,7 @@ public class Machinery {
         m_tagViz = new AprilTagVisualizer(
                 driveLog, fieldLogger, m_drive::getState, layout, DriverStation::getAlliance);
         m_robotViz = new RobotPoseVisualization(
-                fieldLogger, () -> m_drive.getState().pose(), "robot");
+                fieldLogger, () -> m_drive.getState(), "robot");
 
         ////////////////////////////////////////////////////////////
         //
@@ -140,8 +140,8 @@ public class Machinery {
         //
         // SUBSYSTEMS
         //
-        CanId canId1 = new CanId(17);
-        CanId canId2 = new CanId(42);
+        CanId canId1 = new CanId(9);
+        CanId canId2 = new CanId(10);
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
@@ -238,7 +238,6 @@ public class Machinery {
     /** Generally for simulation and visualization */
     public void periodic() {
         m_groundTruth.periodic();
-        m_robotViz.run();
         m_tagViz.update();
     }
 
