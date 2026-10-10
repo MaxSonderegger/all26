@@ -35,7 +35,7 @@ class Identity(Enum):
     """2026 camerabot, 10.1.0.24"""
     CAMERA_FRONT = "8ddb2ed6c49a9bce"
     """2026 camerabot, 10.1.0.32"""
-    CAMERA_2A = "4230a96261f3ab90"
+    CAMERA_2A = "42ed4186e14abbaf"
     """2026 camerabot, 10.1.0.34"""
     #
     # TODO: clean up the entries below
