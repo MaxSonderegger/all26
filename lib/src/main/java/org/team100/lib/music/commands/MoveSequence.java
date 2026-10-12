@@ -20,7 +20,6 @@ public class MoveSequence extends Command {
         this.player = player;
         m_events = events;
         m_timer = new Timer();
-
     }
 
     @Override

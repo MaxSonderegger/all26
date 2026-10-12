@@ -8,19 +8,12 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-
-
-import edu.wpi.first.math.geometry.Translation3d;
-
 /** Translate MIDI tracks to events. */
 public class TracksToEvents {
-
-
 
     public TracksToEvents() {
 
     }
-
 
     public List<MusicEvent> toEvents(Track[] tracks) {
         List<MusicEvent> events = new ArrayList<>();
