@@ -1,6 +1,7 @@
 package org.team100.lib.music;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -40,23 +41,33 @@ public class EventIterator {
         return result;
     }
 
+    private record Tempo(double time, double bpm) {
+    }
+
     private static TreeMap<Double, Map<Integer, MidiEvent>> collate(String filepath, double speed) {
+        // tempo events by tick
+        TreeMap<Long, Tempo> tempos = new TreeMap<>();
+        tempos.put(0l, new Tempo(0.0, 0.0));
+        // note-on events by time by channel
         TreeMap<Double, Map<Integer, MidiEvent>> events = new TreeMap<>();
         Sequence seq = MidiUtil.sequence(filepath);
         if (seq.getDivisionType() > 1) {
             throw new IllegalArgumentException(String.format("%s division type is not PPQ", filepath));
         }
         // resolution is ticks per quarter note (PPQ)
-        int ticksPerBeat = seq.getResolution();
+        final int ticksPerBeat = seq.getResolution();
         Track[] tracks = seq.getTracks();
-        // TODO: are tempo changes included in all tracks?!
-        double bpm = 0;
         for (int ti = 0; ti < tracks.length; ++ti) {
             Track t = tracks[ti];
             for (int ei = 0; ei < t.size(); ++ei) {
                 MidiEvent e = t.get(ei);
                 long tick = e.getTick();
-                double sec = MidiUtil.ticksToSec(tick, bpm, ticksPerBeat);
+                // the timestamp for this note depends on the entire
+                // tempo history, not just the tempo at this time.
+                Entry<Long, Tempo> tempo = tempos.floorEntry(tick);
+                long dtick = tick - tempo.getKey();
+                double sec = tempo.getValue().time
+                        + MidiUtil.ticksToSec(dtick, tempo.getValue().bpm, ticksPerBeat);
                 MidiMessage m = e.getMessage();
                 if (m instanceof MetaMessage) {
                     MetaMessage mm = (MetaMessage) m;
@@ -66,7 +77,8 @@ public class EventIterator {
                         int mpq = ((data[0] & 0xFF) << 16) |
                                 ((data[1] & 0xFF) << 8) |
                                 (data[2] & 0xFF);
-                        bpm = speed * 60000000.0 / mpq;
+                        double bpm = speed * 60000000.0 / mpq;
+                        tempos.put(tick, new Tempo(sec, bpm));
                         if (DEBUG)
                             System.out.printf("tempo %.0f\n", bpm);
                     }

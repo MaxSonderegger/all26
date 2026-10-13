@@ -23,6 +23,8 @@ public class MidiUtil {
     }
 
     public static double ticksToSec(long ticks, double beatsPerMinute, double ticksPerBeat) {
+        if (beatsPerMinute < 1)
+            return 0;
         double ticksPerMinute = beatsPerMinute * ticksPerBeat;
         double ticksPerSec = ticksPerMinute / 60.0;
         return ticks / ticksPerSec;

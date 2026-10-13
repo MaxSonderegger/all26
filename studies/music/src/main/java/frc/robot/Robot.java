@@ -22,13 +22,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-    boolean MOTOR = true;
+    boolean MOTOR = false;
     private final Play play;
 
     public Robot() {
         Startup.start();
-        Player c0;
-        Player c1;
+        final Player c0;
+        final Player c1;
+        final Player c2;
+        final Player c3;
         if (MOTOR) {
             LoggerFactory log = Logging.root();
             TotalCurrentLog totalCurrentLog = new RobotLog(log).totalCurrentLog();
@@ -43,12 +45,21 @@ public class Robot extends TimedRobot {
             c1 = new KrakenX44Motor(
                     log, totalCurrentLog, new CanId(1), neutral,
                     phase, limit, friction, pid);
+            c2 = new KrakenX44Motor(
+                    log, totalCurrentLog, new CanId(2), neutral,
+                    phase, limit, friction, pid);
+            c3 = new KrakenX44Motor(
+                    log, totalCurrentLog, new CanId(3), neutral,
+                    phase, limit, friction, pid);
         } else {
-            c0 = new TextPlayer("player 1");
-            c1 = new TextPlayer("                player 2");
+            c0 = new TextPlayer("c0");
+            c1 = new TextPlayer("         c1");
+            c2 = new TextPlayer("                  c2");
+            c3 = new TextPlayer("                           c3");
         }
         // default speed for this tune is 120, which is fine.
-        play = new Play("popcorn2.mid", 1.0, new Polyphony(c0, c1));
+        // play = new Play("popcorn2.mid", 1.0, new Polyphony(c0, c1));
+        play = new Play("take-the-a-train.mid", 1.0, new Polyphony(c0, c1, c2, c3));
     }
 
     @Override

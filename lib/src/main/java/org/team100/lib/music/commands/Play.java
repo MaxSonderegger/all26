@@ -63,7 +63,7 @@ public class Play extends Command {
                     if (DEBUG)
                         System.out.printf(
                                 "t %.2f, ch %d, tick %d, release\n",
-                                channel, tick);
+                                nowSec, channel, tick);
                     m_ensemble.play(channel, 0);
                 }
             }
