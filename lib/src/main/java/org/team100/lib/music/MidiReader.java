@@ -43,9 +43,6 @@ public class MidiReader {
                     continue;
                 }
 
-                // musescore 4 doesn't do channel assignment
-                // https://musescore.org/en/node/339580
-                // so i'll have to have a little map
                 int channel = sm.getChannel();
                 int key = sm.getData1();
                 int velocity = sm.getData2();

@@ -4,11 +4,40 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * MIDI notes from C3 to C5, equal temperament.
+ * MIDI note numbers and frequencies.
  * 
  * https://audiodev.blog/midi-note-chart/
+ * https://inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
+ * 
+ * TODO: decimal places
  */
 public enum Note {
+    C1(24, 33),
+    Cs1(25, 35),
+    D1(26, 37),
+    Ds1(27, 39),
+    E1(28, 41),
+    F1(29, 44),
+    Fs1(30, 46),
+    G1(31, 49),
+    Gs1(32, 52),
+    A1(33, 55),
+    As1(34, 58),
+    B1(35, 62),
+    //
+    C2(36, 65),
+    Cs2(37, 69),
+    D2(38, 73),
+    Ds2(39, 78),
+    E2(40, 82),
+    F2(41, 87),
+    Fs2(42, 92),
+    G2(43, 98),
+    Gs2(44, 104),
+    A2(45, 110),
+    As2(46, 117),
+    B2(47, 123),
+    //
     C3(48, 131),
     Cs3(49, 139),
     D3(50, 147),
@@ -74,7 +103,29 @@ public enum Note {
     As7(106, 3729),
     B7(107, 3951),
     //
-    C8(108, 4186);
+    C8(108, 4186),
+    Cs8(109, 4435),
+    D8(110, 4699),
+    Ds8(111, 4978),
+    E8(112, 5274),
+    F8(113, 5588),
+    Fs8(114, 5920),
+    G8(115, 6272),
+    Gs8(116, 6645),
+    A8(117, 7040),
+    As8(118, 7459),
+    B8(119, 7902),
+    //
+    //
+    C9(120, 8372),
+    Cs9(121, 8870),
+    D9(122, 9397),
+    Ds9(123, 9956),
+    E9(124, 10548),
+    F9(125, 11175),
+    Fs9(126, 11840),
+    G9(127, 12544),
+    Gs9(128, 13290);
 
     private static Map<Integer, Note> NOTES = new TreeMap<>();
     static {
@@ -86,7 +137,7 @@ public enum Note {
     /** Midi note number */
     public final int midi;
     /** Note frequency in Hz */
-    public final int hz;
+    public final double hz;
 
     Note(int midi, int hz) {
         this.midi = midi;
@@ -94,6 +145,10 @@ public enum Note {
     }
 
     public static Note get(int midi) {
-        return NOTES.get(midi);
+        Note note = NOTES.get(midi);
+        if (note == null) {
+            System.out.printf("Note out of range: %d", midi);
+        }
+        return note;
     }
 }

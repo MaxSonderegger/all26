@@ -1,6 +1,10 @@
 package org.team100.lib.music;
 
-/** Each player plays a different note. */
+/**
+ * Each player plays a different note.
+ * 
+ * TODO: Maybe just use the array.
+ */
 public class Polyphony {
     private final Player m_players[];
 
@@ -8,9 +12,8 @@ public class Polyphony {
         m_players = players;
     }
 
-    public void play(double... freq) {
-        for (int i = 0; i < freq.length && i < m_players.length; ++i) {
-            m_players[i].play(freq[i]);
-        }
+    /** Player i plays freq */
+    public void play(int i, double freq) {
+        m_players[i].play(freq);
     }
 }

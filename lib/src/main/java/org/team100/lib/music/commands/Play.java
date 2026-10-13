@@ -1,124 +1,73 @@
 package org.team100.lib.music.commands;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Track;
 
 import org.team100.lib.music.EventIterator;
-import org.team100.lib.music.MidiUtil;
 import org.team100.lib.music.Note;
 import org.team100.lib.music.Polyphony;
+import org.team100.lib.music.ShortMessageCommand;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Play extends Command {
-    private final Sequence m_sequence;
-    private final Track m_track;
-    private final Polyphony m_ensemble;
-    private final Timer m_timer;
-    private int m_i;
+    private static final boolean DEBUG = false;
     private EventIterator m_iter;
+    private final Timer m_timer;
+    private final Polyphony m_ensemble;
 
-    public Play(String filepath, Polyphony ensemble) {
-        m_sequence = MidiUtil.sequence(filepath);
-        m_track = m_sequence.getTracks()[0];
-        m_ensemble = ensemble;
+    public Play(String filepath, double speed, Polyphony ensemble) {
+        m_iter = new EventIterator(filepath, 0.02, speed);
         m_timer = new Timer();
-        m_iter = new EventIterator(filepath, 0.02);
+        m_ensemble = ensemble;
     }
 
     @Override
     public void initialize() {
         m_timer.reset();
         m_timer.start();
-        m_i = 0;
     }
 
     @Override
     public void execute() {
-        System.out.println("execute");
         double nowSec = m_timer.get();
-        List<MidiEvent> l = m_iter.get(nowSec);
-        if (l == null) {
-            System.out.println("no event for this time slice");
+        Map<Integer, MidiEvent> events = m_iter.get(nowSec);
+        if (events == null) {
             return;
         }
-        for (MidiEvent e : l) {
+        for (Map.Entry<Integer, MidiEvent> entry : events.entrySet()) {
+            MidiEvent e = entry.getValue();
             long tick = e.getTick();
             MidiMessage m = e.getMessage();
             if (m instanceof ShortMessage) {
                 ShortMessage sm = (ShortMessage) m;
-                int key = sm.getData1();
-                Note note = Note.get(key);
-                if (note == null) {
-                    System.out.printf("BAD NOTE %d", key);
-                    continue;
-                }
+                ShortMessageCommand smc = ShortMessageCommand.get(sm.getCommand());
                 int velocity = sm.getData2();
                 int channel = sm.getChannel();
-                if (velocity > 0) {
-                    // attack
-                    System.out.printf(
-                            "Ch %d tick %d Attack key %d v %d\n",
-                            channel, tick, key, velocity);
+                if (smc == ShortMessageCommand.NOTE_ON && velocity > 0) {
+                    int key = sm.getData1();
+                    Note note = Note.get(key);
+                    if (note == null) {
+                        continue;
+                    }
+                    if (DEBUG)
+                        System.out.printf(
+                                "t %.2f, ch %d, tick %d, note %s (%.0f)\n",
+                                nowSec, channel, tick, note, note.hz);
+                    m_ensemble.play(channel, note.hz);
                 } else {
-                    // release
-                    System.out.printf(
-                            "Ch %d tick %d Release key %d v %d\n",
-                            channel, tick, key, velocity);
+                    if (DEBUG)
+                        System.out.printf(
+                                "t %.2f, ch %d, tick %d, release\n",
+                                channel, tick);
+                    m_ensemble.play(channel, 0);
                 }
-            } else {
-                System.out.println("bad type");
             }
         }
-
-        // System.out.printf("i %d\n", m_i);
-        // MidiEvent event = m_track.get(m_i);
-        // m_i++;
-        // MidiMessage msg = event.getMessage();
-        // if (msg instanceof MetaMessage) {
-        // MetaMessage mm = (MetaMessage) msg;
-        // MetaMessageType mmt = MetaMessageType.get(mm.getType());
-        // System.out.printf("Meta %x %s\n", mm.getType(), mmt.name());
-        // switch (mmt) {
-        // case TRACK_NAME:
-        // System.out.println("Track Name: " + new String(mm.getData()));
-        // break;
-        // case TIME_SIGNATURE:
-        // System.out.println("Time Signature: " + new String(mm.getData()));
-        // break;
-        // case KEY_SIGNATURE:
-        // System.out.println("Key Signature: " + new String(mm.getData()));
-        // break;
-        // case SET_TEMPO:
-        // System.out.println("Set Tempo: " + new String(mm.getData()));
-        // break;
-        // default:
-        // System.out.println("other");
-        // }
-        // } else if (msg instanceof ShortMessage) {
-        // long tick = event.getTick();
-        // ShortMessage sm = (ShortMessage) msg;
-        // int channel = sm.getChannel();
-        // int key = sm.getData1();
-        // int velocity = sm.getData2();
-        // if (velocity > 0) {
-        // System.out.printf(
-        // "Ch %d tick %d Attack key %d v %d\n",
-        // channel, tick, key, velocity);
-        // } else {
-        // System.out.printf(
-        // "Ch %d tick %d Release key %d v %d\n",
-        // channel, tick, key, velocity);
-        // }
-        // } else {
-        // System.out.println("Other message: %s" + msg.toString());
-        // }
     }
 
     @Override
