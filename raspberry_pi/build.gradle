@@ -47,7 +47,7 @@ task 'Deploy Camera Code' { // pretty name for vscode
                 logger.warn("\u001B[1;32mDEPLOYED\u001B[0m to ${camera.name} at ${camera.host}." +
                     " Look at the viewfinder at ${camera.host}:1181")
             } catch (Exception e) {
-                logger.warn("skipping ${camera.name}")
+                logger.warn("skipping ${camera.name}: " + e)
             }
         }
     }
