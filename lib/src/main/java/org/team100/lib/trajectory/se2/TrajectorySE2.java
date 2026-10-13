@@ -3,11 +3,13 @@ package org.team100.lib.trajectory.se2;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.WaypointSE2;
 import org.team100.lib.path.se2.PathSE2Point;
 import org.team100.lib.trajectory.TrajectoryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * A trajectory in SE(2), the space Pose2d lives in.
@@ -62,6 +64,35 @@ public class TrajectorySE2 {
             }
         }
         throw new IllegalStateException("impossible trajectory: " + toString());
+    }
+
+    /**
+     * Trajectory time at closest approach to p.
+     * 
+     * This is useful for "pursuit" followers: find the closest-approach time and
+     * sample the trajectory a little later than that time.
+     * 
+     * This makes no attempt to interpolate between trajectory entries, it just
+     * returns the closest one.
+     * 
+     * Samples every time slice on the the whole path, so it's not particularly
+     * fast.
+     * 
+     * TODO: be more clever about sampling and interpolating.
+     */
+    public double timeOfClosestApproach(Translation2d p) {
+        double dMin = Double.MAX_VALUE;
+        double time = 0;
+        for (double t = 0; t < duration(); t += TimedRobot100.LOOP_PERIOD_S) {
+            TrajectorySE2Entry entry = sample(t);
+            Translation2d tt = entry.point().point().waypoint().pose().getTranslation();
+            double d = tt.getDistance(p);
+            if (d < dMin) {
+                dMin = d;
+                time = t;
+            }
+        }
+        return time;
     }
 
     /** Time is at or beyond the trajectory duration. */
