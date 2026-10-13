@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
  * TimedState.
  */
 public class TrajectorySE2 {
+    private static final boolean DEBUG = false;
     private final List<TrajectorySE2Entry> m_points;
     private final double m_duration;
 
@@ -83,13 +84,16 @@ public class TrajectorySE2 {
     public double timeOfClosestApproach(Translation2d p) {
         double dMin = Double.MAX_VALUE;
         double time = 0;
-        for (double t = 0; t < duration(); t += TimedRobot100.LOOP_PERIOD_S) {
+        // one extra loop to make sure we get to the end.
+        for (double t = 0; t <= duration() + TimedRobot100.LOOP_PERIOD_S; t += TimedRobot100.LOOP_PERIOD_S) {
             TrajectorySE2Entry entry = sample(t);
             Translation2d tt = entry.point().point().waypoint().pose().getTranslation();
+            if (DEBUG)
+                System.out.printf("entry %s\n", entry);
             double d = tt.getDistance(p);
             if (d < dMin) {
                 dMin = d;
-                time = t;
+                time = entry.point().time();
             }
         }
         return time;

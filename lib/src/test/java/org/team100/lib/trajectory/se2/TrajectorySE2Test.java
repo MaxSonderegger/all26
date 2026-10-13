@@ -49,6 +49,8 @@ class TrajectorySE2Test implements Timeless {
 
         // this is a straight line from (0,0,0) to (1,0,0) traversed in 0.711 sec.
         TrajectorySE2 trajectory = planner.restToRest(waypoints);
+        if (DEBUG)
+            System.out.printf("t %s\n", trajectory);
         assertEquals(0.711, trajectory.duration(), 1e-3);
         // closest time to start should be zero
         assertEquals(0, trajectory.timeOfClosestApproach(new Translation2d(0, 0)), 1e-3);
@@ -56,7 +58,6 @@ class TrajectorySE2Test implements Timeless {
         assertEquals(0.711, trajectory.timeOfClosestApproach(new Translation2d(1, 0)), 1e-3);
         // a point to the side, in the middle, time is also in the middle
         assertEquals(0.360, trajectory.timeOfClosestApproach(new Translation2d(0.5, 0.5)), 1e-3);
-
     }
 
     @Test
