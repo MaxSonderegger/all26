@@ -14,6 +14,7 @@ public class Polyphony {
 
     /** Player i plays freq */
     public void play(int i, double freq) {
-        m_players[i].play(freq);
+        if (i < m_players.length)
+            m_players[i].play(freq);
     }
 }

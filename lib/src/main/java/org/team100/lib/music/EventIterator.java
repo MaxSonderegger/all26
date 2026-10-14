@@ -41,6 +41,10 @@ public class EventIterator {
         return result;
     }
 
+    public double duration() {
+        return m_events.lastKey();
+    }
+
     private record Tempo(double time, double bpm) {
     }
 
