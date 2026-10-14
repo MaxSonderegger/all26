@@ -6,6 +6,7 @@ package org.team100.lib.music;
  * TODO: Maybe just use the array.
  */
 public class Polyphony {
+    private static final boolean DEBUG = false;
     private final Player m_players[];
 
     public Polyphony(Player... players) {
@@ -14,6 +15,9 @@ public class Polyphony {
 
     /** Player i plays freq */
     public void play(int i, double freq) {
-        m_players[i].play(freq);
+        if (DEBUG)
+            System.out.printf("%d %f\n", i, freq);
+        if (i < m_players.length)
+            m_players[i].play(freq);
     }
 }

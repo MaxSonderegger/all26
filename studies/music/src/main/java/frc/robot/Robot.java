@@ -59,7 +59,14 @@ public class Robot extends TimedRobot {
         }
         // default speed for this tune is 120, which is fine.
         // play = new Play("popcorn2.mid", 1.0, new Polyphony(c0, c1));
-        play = new Play("take-the-a-train.mid", 1.0, new Polyphony(c0, c1, c2, c3));
+        // play = new Play("take-the-a-train.mid", 1.0, new Polyphony(c0, c1, c2, c3));
+        // play = new Play("waltz-no-2-trio.mid", 1.0, new Polyphony(c0, c1, c2));
+        // play = new Play("quartet-ravel.mid", 1.0, new Polyphony(c0, c1, c2, c3));
+        // jupter has ten tracks
+        // play = new Play("jupiter.mid", 1.0, new Polyphony(c0, c1, c2, c3));
+        // dvorak 9 has five tracks
+        // play = new Play("dvorak-9.mid", 1.0, new Polyphony(c0, c1, c2, c3));
+        play = new Play("dance-of-the-knights-prokofiev.mid", 1.0, new Polyphony(c0, c1, c2, c3));
     }
 
     @Override

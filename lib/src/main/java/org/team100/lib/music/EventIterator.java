@@ -1,5 +1,7 @@
 package org.team100.lib.music;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -14,11 +16,14 @@ import javax.sound.midi.Track;
 
 /**
  * Collates all the NOTE_ON and NOTE_OFF events into a single timeline.
+ * 
+ * Understands multiple tracks and multiple channels, but doesn't understand
+ * chords within a single channel.
  */
 public class EventIterator {
     private static final boolean DEBUG = false;
 
-    /** (timestamp, (channel, event)) */
+    /** (timestamp, (index, event)) */
     private TreeMap<Double, Map<Integer, MidiEvent>> m_events;
     private final double m_dt;
 
@@ -28,8 +33,7 @@ public class EventIterator {
     }
 
     /**
-     * Find events from t-dt (exclusive) to t (inclusive).
-     * Return the most-recent events for each channel.
+     * Find (index, event) from t-dt (exclusive) to t (inclusive).
      */
     public Map<Integer, MidiEvent> get(double t) {
         NavigableMap<Double, Map<Integer, MidiEvent>> m = m_events.subMap(t - m_dt, false, t, true);
@@ -57,6 +61,7 @@ public class EventIterator {
         // resolution is ticks per quarter note (PPQ)
         final int ticksPerBeat = seq.getResolution();
         Track[] tracks = seq.getTracks();
+        List<Integer> trackChannelIndices = new ArrayList<>();
         for (int ti = 0; ti < tracks.length; ++ti) {
             Track t = tracks[ti];
             for (int ei = 0; ei < t.size(); ++ei) {
@@ -91,23 +96,34 @@ public class EventIterator {
                         int key = sm.getData1();
                         int velocity = sm.getData2();
                         int channel = sm.getChannel();
-                        // We retain only one event per channel per time slice, since we can take only
+                        // channels can be nonunique and nonsequential, so make a
+                        // sequence.
+                        int trackChannel = ti * 16 + channel;
+                        int index = trackChannelIndices.indexOf(trackChannel);
+                        if (index == -1) {
+                            trackChannelIndices.add(trackChannel);
+                            index = trackChannelIndices.size() - 1;
+                        }
+                        // We retain only one event per index per time slice, since we can take only
                         // one action per time slice.
                         // Because we're stepping through events in tick order, the youngest event will
                         // remain.
-                        events.computeIfAbsent(sec, x -> new TreeMap<>()).put(channel, e);
+                        events.computeIfAbsent(sec, x -> new TreeMap<>()).put(index, e);
                         Note note = Note.get(key);
                         if (note == null) {
                             continue;
                         }
                         if (DEBUG)
                             System.out.printf("%f: Ch %d: %d: %s (%.0f) %d\n",
-                                    sec, channel, tick, note, note.hz, velocity);
+                                    sec, index, tick, note, note.hz, velocity);
                     }
                     continue;
                 }
             }
         }
+        System.out.printf("*** Loaded MIDI %s tracks: %d indices: %d\n",
+                filepath, tracks.length, trackChannelIndices.size());
+
         return events;
     }
 

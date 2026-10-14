@@ -39,6 +39,7 @@ public class Play extends Command {
         if (events == null) {
             return;
         }
+        // (index, event)
         for (Map.Entry<Integer, MidiEvent> entry : events.entrySet()) {
             MidiEvent e = entry.getValue();
             long tick = e.getTick();
@@ -47,7 +48,8 @@ public class Play extends Command {
                 ShortMessage sm = (ShortMessage) m;
                 ShortMessageCommand smc = ShortMessageCommand.get(sm.getCommand());
                 int velocity = sm.getData2();
-                int channel = sm.getChannel();
+                // don't use the channel in the message, use the index.
+                int channel = entry.getKey();
                 if (smc == ShortMessageCommand.NOTE_ON && velocity > 0) {
                     int key = sm.getData1();
                     Note note = Note.get(key);
