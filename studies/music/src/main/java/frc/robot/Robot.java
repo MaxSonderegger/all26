@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
         final Player c0;
         final Player c1;
         final Player c2;
-        // final Player c3;
+        final Player c3;
         if (MOTOR) {
             LoggerFactory log = Logging.root();
             TotalCurrentLog totalCurrentLog = new RobotLog(log).totalCurrentLog();
@@ -49,14 +49,14 @@ public class Robot extends TimedRobot {
             c2 = new KrakenX44Motor(
             log, totalCurrentLog, new CanId(3), neutral,
             phase, limit, friction, pid);
-            // c3 = new KrakenX44Motor(
-            // log, totalCurrentLog, new CanId(3), neutral,
-            // phase, limit, friction, pid);
+            c3 = new KrakenX44Motor(
+            log, totalCurrentLog, new CanId(3), neutral,
+            phase, limit, friction, pid);
         } else {
             c0 = new TextPlayer("c0");
             c1 = new TextPlayer("c1");
             c2 = new TextPlayer("c2");
-            // c3 = new TextPlayer(" c3");
+            c3 = new TextPlayer(" c3");
         }
         // default speed for this tune is 120, which is fine.
         // play = new Play("popcorn2.mid", 1.0, new Polyphony(c0, c1));
