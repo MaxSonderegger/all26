@@ -49,7 +49,7 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new UTurnWithRotation(
+        m_autonChooser.add(new Scallop2(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
