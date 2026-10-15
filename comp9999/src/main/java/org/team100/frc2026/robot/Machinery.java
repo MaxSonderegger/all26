@@ -11,6 +11,8 @@ import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.dynamics.p.PDynamics;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AddOdometryNoise;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -185,6 +187,14 @@ public class Machinery {
         /// GROUND TRUTH
         ///
         m_groundTruth = new GroundTruth(fieldLogger, logger, m_swerveKinodynamics, m_modules, layout);
+
+        ///////////////////////////////////
+        ///
+        /// EXPERIMENT OVERRIDES
+        ///
+
+        // Without cameras, this should always be on.
+        Experiments.INSTANCE.override(Experiment.PerfectGyro, true);
     }
 
     /**
