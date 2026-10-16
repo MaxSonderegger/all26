@@ -38,7 +38,7 @@ public IntakeOutake(
         ControllerSE2 controller,
         Machinery machinery) {
             List<TimingConstraint> constraints =
-            new TimingConstraintFactory(kinodynamics).slow();
+            new TimingConstraintFactory(kinodynamics).auto();
             this.m_pathFactory = new PathSE2Factory();
             this.m_trajectoryFactory = new TrajectorySE2Factory(constraints);
             this.m_planner = new TrajectorySE2Planner(m_pathFactory, m_trajectoryFactory);
@@ -57,11 +57,17 @@ public IntakeOutake(
             DriveWithTrajectoryFunction driveCommandAfter = new DriveWithTrajectoryFunction(
             m_log, m_machinery.m_drive, m_controller,
             m_machinery.m_trajectoryViz, this::drivingForwardAfter);
+            DriveWithTrajectoryFunction driveBack = new DriveWithTrajectoryFunction(
+            m_log, m_machinery.m_drive, m_controller,
+            m_machinery.m_trajectoryViz, this::drivingBack);
             HolonomicProfile turnProfile = HolonomicProfileFactory.get(
             m_machinery.m_swerveKinodynamics, 0.5, 0.5, 0.5, 0.5);
             DriveToPoseWithProfile turnCommand = new DriveToPoseWithProfile(
             m_log, m_machinery.m_drive, m_controller, turnProfile,
             this::leftTurnGoal);
+            DriveToPoseWithProfile turnBackCommand = new DriveToPoseWithProfile(
+            m_log, m_machinery.m_drive, m_controller, turnProfile,
+            this::leftOriginalGoal);
             return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving"))
                 .andThen(driveCommand.until(driveCommand::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
@@ -70,11 +76,15 @@ public IntakeOutake(
                 .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Intake")))
                 .andThen(m_machinery.m_subsystem.velocity(1).withTimeout(3))
+                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Back")))
+                .andThen(turnBackCommand.until(turnBackCommand::isDone))
+                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Back")))
+                .andThen(driveBack.until(driveBack::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Finished")));
     }
 
     public String name() {
-        return "Drive Forward";
+        return "Drive Intake Back";
     }
         TrajectorySE2 drivingForward(Pose2d startingPose) {
             DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
@@ -95,6 +105,20 @@ public IntakeOutake(
             WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
             Transform2d forwardTwoMeters = new Transform2d(2, 0, Rotation2d.kZero);
             Pose2d endingPose = startingPose.plus(forwardTwoMeters);
+            WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
+            List<WaypointSE2> waypoints = List.of(start, end);
+            return m_planner.restToRest(waypoints);
+        }
+        Pose2d leftOriginalGoal() {
+            Pose2d currentPose = m_machinery.m_drive.getState().pose();
+            Rotation2d targetRotation = currentPose.getRotation().minus(Rotation2d.fromDegrees(180));
+            return new Pose2d(currentPose.getTranslation(), targetRotation);
+        }
+        TrajectorySE2 drivingBack(Pose2d startingPose) {
+            DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
+            WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
+            Transform2d forwardFourMeters = new Transform2d(2, 0, Rotation2d.kZero);
+            Pose2d endingPose = startingPose.plus(forwardFourMeters);
             WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
             List<WaypointSE2> waypoints = List.of(start, end);
             return m_planner.restToRest(waypoints);
