@@ -25,8 +25,6 @@ import org.team100.lib.profile.se2.HolonomicProfile;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 
-@SuppressWarnings("unused")
-
 public class IntakeOutake implements AnnotatedCommand {
     private final LoggerFactory m_log;
     private final Machinery m_machinery;
@@ -70,16 +68,16 @@ public IntakeOutake(
             DriveToPoseWithProfile turnBackCommand = new DriveToPoseWithProfile(
             m_log, m_machinery.m_drive, m_controller, turnProfile,
             this::leftOriginalGoal);
-            return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving, Turning, Forward"))
+            return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving"))
                 .andThen(driveCommand.until(driveCommand::isDone))
-                // .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
-                // .andThen(turnCommand.until(turnCommand::isDone))
-                // .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Forward After")))
-                // .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
+                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
+                .andThen(turnCommand.until(turnCommand::isDone).withTimeout(3))
+                .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Forward After")))
+                .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Intake")))
                 .andThen(m_machinery.m_subsystem.velocity(1).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Back")))
-                .andThen(turnBackCommand.until(turnBackCommand::isDone))
+                .andThen(turnBackCommand.until(turnBackCommand::isDone).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Back")))
                 .andThen(driveBack.until(driveBack::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Finished")));
@@ -94,16 +92,11 @@ public IntakeOutake(
     }
         TrajectorySE2 drivingForward(Pose2d startingPose) {
             DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
-            DirectionSE2 bendCourse = new DirectionSE2(1, 0, 1);
             WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
-            Transform2d forwardFourMeters = new Transform2d(4, 0, Rotation2d.kZero);            
+            Transform2d forwardFourMeters = new Transform2d(4, 0, Rotation2d.kZero);
             Pose2d endingPose = startingPose.plus(forwardFourMeters);
-            WaypointSE2 end = new WaypointSE2(endingPose, bendCourse, 1);
-            Pose2d secondPose = endingPose.plus(
-                new Transform2d(0, 2, Rotation2d.fromDegrees(90)));
-            DirectionSE2 turnCourse = new DirectionSE2(0, 1, 0);
-            WaypointSE2 turnEnd = new WaypointSE2(secondPose, turnCourse, 1);
-            List<WaypointSE2> waypoints = List.of(start, end, turnEnd);
+            WaypointSE2 end = new WaypointSE2(endingPose, course, 1);            
+            List<WaypointSE2> waypoints = List.of(start, end);
             return m_planner.restToRest(waypoints);
         }
         Pose2d leftTurnGoal() {
