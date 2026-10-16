@@ -145,7 +145,7 @@ public class Machinery {
         NeutralMode100 neutral = NeutralMode100.COAST;
         MotorPhase phase1 = MotorPhase.FORWARD;
         MotorPhase phase2 = MotorPhase.REVERSE;
-        CurrentLimit limit = new CurrentLimit(30, 30);
+        CurrentLimit limit = new CurrentLimit(65, 65);
         double gearRatio = 6.0;
         double wheelDiameterM = 0.025;
         Friction friction = new Friction(0.32, 0.32, 0.0, 0.5);
