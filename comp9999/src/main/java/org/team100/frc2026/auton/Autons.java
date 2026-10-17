@@ -59,12 +59,11 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new IntakeOutput(
+            m_autonChooser.add(new IntakeOutake2(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-
         // The following were from CVE in 2026
              
     }
