@@ -45,14 +45,14 @@ public class IntakeOutakeHopper implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(8, 20),
+                new ConstantConstraint(8, 80),
                 // absolute maxima
                 // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
                 // new YawRateConstraint(log, 8, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(8, 20),
+                new CapsizeAccelerationConstraint(8, 80),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
@@ -106,7 +106,11 @@ public class IntakeOutakeHopper implements AnnotatedCommand {
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(0, -1, 0), 1),
+                new WaypointSE2(startingPose, new DirectionSE2(-1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(3.0, 3.9, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+
+                new WaypointSE2(new Pose2d(3.1, 2, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 1),
 
                 new WaypointSE2(new Pose2d(3, 0.7, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 

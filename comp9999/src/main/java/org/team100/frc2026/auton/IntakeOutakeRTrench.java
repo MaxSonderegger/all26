@@ -45,14 +45,14 @@ public class IntakeOutakeRTrench implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(8, 20),
+                new ConstantConstraint(8, 80),
                 // absolute maxima
                 // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
                 // new YawRateConstraint(log, 8, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(8, 20),
+                new CapsizeAccelerationConstraint(8, 80),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(BumpZones.RED_BUMP_LEFT, bumpV),
@@ -83,7 +83,7 @@ public class IntakeOutakeRTrench implements AnnotatedCommand {
 
         return parallel(
             fn,
-        machinery.m_subsystem.velocity(1).withTimeout(3.5)
+        machinery.m_subsystem.velocity(1).withTimeout(4.5)
         .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
         // // extend when in neutral zone
         // toggle(
