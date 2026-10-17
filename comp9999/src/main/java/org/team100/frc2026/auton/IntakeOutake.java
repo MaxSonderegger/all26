@@ -101,8 +101,8 @@ public IntakeOutake(
             return new Pose2d(currentPose.getTranslation(), targetRotation);
         }
         TrajectorySE2 drivingForwardAfter(Pose2d startingPose) {
-            DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
-            WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
+                DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
+                WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
             Transform2d forwardTwoMeters = new Transform2d(2, 0, Rotation2d.kZero);
             Pose2d endingPose = startingPose.plus(forwardTwoMeters);
             WaypointSE2 end = new WaypointSE2(endingPose, course, 1);

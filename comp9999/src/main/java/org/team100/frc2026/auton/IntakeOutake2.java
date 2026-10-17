@@ -22,17 +22,18 @@ import org.team100.lib.trajectory.se2.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.se2.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.se2.constraint.TimingConstraint;
 import org.team100.lib.trajectory.se2.constraint.VelocityLimitRegionConstraint;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class IntakeOutput implements AnnotatedCommand {
+public class IntakeOutake2 implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public IntakeOutput(
+    public IntakeOutake2(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -63,12 +64,12 @@ public class IntakeOutput implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.RIGHT_TRENCH;
+        return StartingPositions.LEFT_TRENCH_OUTER;
     }
 
     @Override
     public String name() {
-        return "IntakeOutput";
+        return "IntakeOutake2";
     }
 
     @Override
@@ -81,18 +82,20 @@ public class IntakeOutput implements AnnotatedCommand {
                 this::t1);
 
         return parallel(
-                fn
-        // extend when in neutral zone
-         //toggle(
-         //this::inNeutralZone,
-         //machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-         //machinery.m_intakeExtend.goToRetractedPosition()),
-        //roll when extended
-         //toggle(
-         //this::intakeExtended,
-        //parallel( machinery.m_intake.intake(),
-         //machinery.m_shooter.shooterFullspeed()),
-         //machinery.m_intake.stop())
+            fn,
+        machinery.m_subsystem.velocity(1).withTimeout(3.5)
+        .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
+        // // extend when in neutral zone
+        // toggle(
+        // this::inNeutralZone,
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // machinery.m_intakeExtend.goToRetractedPosition()),
+        // // roll when extended
+        // toggle(
+        // this::intakeExtended,
+        // parallel( machinery.m_intake.intake(),
+        // machinery.m_shooter.shooterFullspeed()),
+        // machinery.m_intake.stop())
         );
     }
 
@@ -100,24 +103,20 @@ public class IntakeOutput implements AnnotatedCommand {
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
         return List.of(this::t1);
     }
-    // for future reference write down what the auton is supposed to do
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 1),
-                         1),
-                new WaypointSE2(new Pose2d(5.7, 0.6, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
-                        1),
-                new WaypointSE2(new Pose2d(7.5, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 
-                        1),
-                 new WaypointSE2(new Pose2d(8, 7, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 
-                        1),       
-                new WaypointSE2(new Pose2d(8.3, 7, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 0, 1), 
-                        1),
-                new WaypointSE2(new Pose2d(8.3, 1, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, 1, 0), 
-                        1)   
+                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-        //
+                //new WaypointSE2(new Pose2d(6, 7.2, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+
+                new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(315 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+
+                new WaypointSE2(new Pose2d(8, 4, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(0, -1, -1), 1),
+
+                new WaypointSE2(new Pose2d(5.1, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+
+                new WaypointSE2(new Pose2d(1.5, 0.7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
         );
         return planner.restToRest(waypoints);
     }
