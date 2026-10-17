@@ -83,7 +83,7 @@ public class IntakeOutakeLTrench implements AnnotatedCommand {
 
         return parallel(
             fn,
-        machinery.m_subsystem.velocity(1).withTimeout(3.5)
+        machinery.m_subsystem.velocity(1).withTimeout(4.5)
         .andThen(machinery.m_subsystem.velocity(-1).withTimeout(3))
         // // extend when in neutral zone
         // toggle(
@@ -108,7 +108,9 @@ public class IntakeOutakeLTrench implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                //new WaypointSE2(new Pose2d(6, 7.2, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
+                new WaypointSE2(new Pose2d(5.5, 7.35, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(3,0, 0), 1),
+
+                new WaypointSE2(new Pose2d(5, 7.4, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,0, 0), 1),
 
                 new WaypointSE2(new Pose2d(7, 6.8, new Rotation2d(300 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
 

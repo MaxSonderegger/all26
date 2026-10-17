@@ -108,8 +108,6 @@ public class IntakeOutakeHopper implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(0, -1, 0), 1),
 
-                //new WaypointSE2(new Pose2d(6, 7.2, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,-1, 0), 1),
-
                 new WaypointSE2(new Pose2d(3, 0.7, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
                 new WaypointSE2(new Pose2d(6.2, 0.7, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
