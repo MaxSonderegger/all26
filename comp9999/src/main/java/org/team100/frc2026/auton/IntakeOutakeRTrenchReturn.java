@@ -45,7 +45,7 @@ public class IntakeOutakeRTrenchReturn implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(8, 80),
+                new ConstantConstraint(10, 80),
                 // absolute maxima
                 // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
@@ -110,7 +110,7 @@ public class IntakeOutakeRTrenchReturn implements AnnotatedCommand {
 
                 new WaypointSE2(new Pose2d(5.5, 0.75, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(5, 0.7, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,0, 0), 1),
+                new WaypointSE2(new Pose2d(4.9, 0.7, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1,0, 0), 1),
 
                 new WaypointSE2(new Pose2d(7, 0.7, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 1), 1),
 
