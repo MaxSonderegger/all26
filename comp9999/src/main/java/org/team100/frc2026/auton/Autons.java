@@ -54,12 +54,27 @@ public class Autons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new Scallop2(
+        m_autonChooser.add(new IntakeOutakeLTrenchReturn(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-            m_autonChooser.add(new IntakeOutake2(
+            m_autonChooser.add(new IntakeOutakeLTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+            m_autonChooser.add(new IntakeOutakeRTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+            m_autonChooser.add(new IntakeOutakeHopper(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+            m_autonChooser.add(new IntakeOutakeRTrenchReturn(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
