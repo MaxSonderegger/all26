@@ -118,9 +118,9 @@ public class IntakeOutakeRTrenchReturn implements AnnotatedCommand {
 
                 new WaypointSE2(new Pose2d(8.25, 2.5, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(5, 0, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(5, 0.2, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(3, 0.0, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(3, 0.2, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1)
 
         );
         return planner.restToRest(waypoints);
