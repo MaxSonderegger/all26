@@ -273,7 +273,7 @@ public class Machinery {
         //         d.get(6),
         //         d.get(7));
         Polyphony allVoices = new Polyphony(voice1, voice2);
-        return new Play("Undertale=.mid", 1.0 , allVoices);
+        return new Play("Undertale.mid", 1.0 , allVoices);
     }
 
     /** Generally for simulation and visualization */
