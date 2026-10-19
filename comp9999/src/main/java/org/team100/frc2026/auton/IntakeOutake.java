@@ -71,13 +71,13 @@ public IntakeOutake(
             return Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving"))
                 .andThen(driveCommand.until(driveCommand::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Left")))
-                .andThen(turnCommand.until(turnCommand::isDone))
+                .andThen(turnCommand.until(turnCommand::isDone).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Forward After")))
                 .andThen(driveCommandAfter.until(driveCommandAfter::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Intake")))
                 .andThen(m_machinery.m_subsystem.velocity(1).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Turning Back")))
-                .andThen(turnBackCommand.until(turnBackCommand::isDone))
+                .andThen(turnBackCommand.until(turnBackCommand::isDone).withTimeout(3))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Driving Back")))
                 .andThen(driveBack.until(driveBack::isDone))
                 .andThen(Commands.runOnce(() -> SmartDashboard.putString("Auton Step", "Finished")));
@@ -86,12 +86,16 @@ public IntakeOutake(
     public String name() {
         return "Drive Intake Back";
     }
+    @Override
+    public Pose2d start() {
+        return new Pose2d(3.5, 0.7, Rotation2d.kZero);
+    }
         TrajectorySE2 drivingForward(Pose2d startingPose) {
             DirectionSE2 course = DirectionSE2.irrotational(startingPose.getRotation());
             WaypointSE2 start = new WaypointSE2(startingPose, course, 1);
             Transform2d forwardFourMeters = new Transform2d(4, 0, Rotation2d.kZero);
             Pose2d endingPose = startingPose.plus(forwardFourMeters);
-            WaypointSE2 end = new WaypointSE2(endingPose, course, 1);
+            WaypointSE2 end = new WaypointSE2(endingPose, course, 1);            
             List<WaypointSE2> waypoints = List.of(start, end);
             return m_planner.restToRest(waypoints);
         }
