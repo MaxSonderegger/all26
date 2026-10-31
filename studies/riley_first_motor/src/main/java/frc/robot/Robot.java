@@ -4,16 +4,32 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+//import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.team100.lib.config.CurrentLimit;
+import org.team100.lib.config.Friction;
+import org.team100.lib.config.PIDConstants;
+import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.Logging;
+import org.team100.lib.logging.RobotLog;
+import org.team100.lib.logging.TotalCurrentLog;
+import org.team100.lib.motor.MotorPhase;
+import org.team100.lib.motor.NeutralMode100;
+import org.team100.lib.motor.ctre.Falcon500Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
+import org.team100.lib.util.CanId;
+import org.team100.lib.util.Startup;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot100 {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -23,11 +39,34 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-  public Robot() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-  }
+private final KrakenX60Motor m_motor;
+private double percent = 0;
+
+
+public Robot() {
+    Startup.start();
+    LoggerFactory log = Logging.root();
+    RobotLog robotLog = new RobotLog(log);
+    TotalCurrentLog currentLog = robotLog.totalCurrentLog();
+    DriverXboxControl controller = new DriverXboxControl(log, 0);
+  
+
+
+    System.out.println("Initializing motor");
+    m_motor = new KrakenX60Motor(
+            log.name("motor"),
+            currentLog,
+            new CanId(10), // YOUR CAN ID, not 7!
+            NeutralMode100.COAST,
+            MotorPhase.FORWARD,
+            new CurrentLimit(10, 10),
+            new Friction(0, 0, 0, 0),
+            PIDConstants.zero());
+    System.out.println("Motor initialized");
+
+}
+
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -37,7 +76,8 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -76,7 +116,15 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double speed = m_motor.encoder().getVelocityRad_S();
+    System.out.printf("speed %.2f%n", speed);
+    if(percent > -0.3){
+      percent -= 0.001;
+    }
+    m_motor.setDutyCycle(percent);
+    System.out.println("Percent: " + percent);
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
