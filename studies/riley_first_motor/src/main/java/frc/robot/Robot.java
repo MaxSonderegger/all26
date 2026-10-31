@@ -20,7 +20,6 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
-import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.util.CanId;
 import org.team100.lib.util.Startup;
 
@@ -39,8 +38,9 @@ public class Robot extends TimedRobot100 {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-private final KrakenX60Motor m_motor;
+private final Falcon500Motor m_motor;
 private double percent = 0;
+private DriverXboxControl controller;
 
 
 public Robot() {
@@ -48,15 +48,14 @@ public Robot() {
     LoggerFactory log = Logging.root();
     RobotLog robotLog = new RobotLog(log);
     TotalCurrentLog currentLog = robotLog.totalCurrentLog();
-    DriverXboxControl controller = new DriverXboxControl(log, 0);
   
 
 
     System.out.println("Initializing motor");
-    m_motor = new KrakenX60Motor(
+    m_motor = new Falcon500Motor(
             log.name("motor"),
             currentLog,
-            new CanId(10), // YOUR CAN ID, not 7!
+            new CanId(2), // YOUR CAN ID, not 7!
             NeutralMode100.COAST,
             MotorPhase.FORWARD,
             new CurrentLimit(10, 10),
@@ -119,8 +118,8 @@ public Robot() {
   public void teleopPeriodic() {
     double speed = m_motor.encoder().getVelocityRad_S();
     System.out.printf("speed %.2f%n", speed);
-    if(percent > -0.3){
-      percent -= 0.001;
+    if(percent < 0.3){
+      percent += 0.001;
     }
     m_motor.setDutyCycle(percent);
     System.out.println("Percent: " + percent);
