@@ -39,8 +39,8 @@ public class Robot extends TimedRobot100 {
    * initialization code.
    */
 private final Falcon500Motor m_motor;
-private double percent = 0;
-private DriverXboxControl controller;
+private double m_dutyCycle = 0;
+private DriverXboxControl m_controller;
 
 
 public Robot() {
@@ -48,6 +48,7 @@ public Robot() {
     LoggerFactory log = Logging.root();
     RobotLog robotLog = new RobotLog(log);
     TotalCurrentLog currentLog = robotLog.totalCurrentLog();
+    m_controller = new DriverXboxControl(log, 0);
   
 
 
@@ -116,13 +117,19 @@ public Robot() {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double speed = m_motor.encoder().getVelocityRad_S();
-    System.out.printf("speed %.2f%n", speed);
-    if(percent < 0.3){
-      percent += 0.001;
-    }
-    m_motor.setDutyCycle(percent);
-    System.out.println("Percent: " + percent);
+    double m_speed = m_motor.encoder().getVelocityRad_S();
+    System.out.printf("m_speed %.2f%n", m_speed);
+
+    // Slowly speeds up
+    // if(m_dutyCycle < 0.3){
+    //   m_dutyCycle += 0.001;
+    // }
+    // m_motor.setDutyCycle(m_dutyCycle);
+    // System.out.println("duty cycle: " + m_dutyCycle);
+   
+    m_dutyCycle = m_controller.leftY() / 10.0;
+    m_motor.setDutyCycle(m_dutyCycle);
+
   }
 
   /** This function is called once when the robot is disabled. */
