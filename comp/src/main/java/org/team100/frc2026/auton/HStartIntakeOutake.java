@@ -109,17 +109,17 @@ public class HStartIntakeOutake implements AnnotatedCommand {
 
                 new WaypointSE2(new Pose2d(4, 7.3, new Rotation2d(0 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(7.6, 6.8, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 1), 1)
+                new WaypointSE2(new Pose2d(7.6, 6.8, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(1, -1, 1), 1),
                 
-                // new WaypointSE2(new Pose2d(7.3, 0.9, new Rotation2d(255 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
+                new WaypointSE2(new Pose2d(7.3, 0.9, new Rotation2d(255 * (Math.PI / 180))), new DirectionSE2(0, -1, 0), 1),
 
-                // new WaypointSE2(new Pose2d(8.2, 0.9, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8.2, 0.9, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                
-                // new WaypointSE2(new Pose2d(7.8, 6.8, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(-1, 1, 0), 1),
+                new WaypointSE2(new Pose2d(7.8, 6.8, new Rotation2d(90 * (Math.PI / 180))), new DirectionSE2(-1, 1, 0), 1),
 
-                // new WaypointSE2(new Pose2d(3.1, 6.3, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, -1, 0), 1),
+                new WaypointSE2(new Pose2d(3.1, 6.3, new Rotation2d(270 * (Math.PI / 180))), new DirectionSE2(-1, -1, 0), 1),
 
-                // new WaypointSE2(startingPose, new DirectionSE2(1, -0.3, 0), 1)
+                new WaypointSE2(startingPose, new DirectionSE2(1, -0.3, 0), 1)
 
                 
 
