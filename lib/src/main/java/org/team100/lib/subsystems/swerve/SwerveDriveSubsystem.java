@@ -1,11 +1,13 @@
 package org.team100.lib.subsystems.swerve;
 
 import java.util.List;
+import java.util.Map;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.dynamics.swerve.SwerveEffort;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.se2.ChassisAcceleration;
+import org.team100.lib.localization.ImmutableSwerveHistory;
 import org.team100.lib.localization.StateEstimator;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LogPoller;
@@ -20,9 +22,8 @@ import org.team100.lib.state.VelocityControlSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
-import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.NoisyStateSE2;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +33,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * The swerve subsystem is a thin subsystem wrapper that provides pose
  * estimation and local actuation.
  */
-public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsystemSE2, Music {
+public class SwerveDriveSubsystem extends SubsystemBase
+        implements Music, StateEstimator, VelocitySubsystemSE2 {
     private final StateEstimator m_estimate;
     private final SwerveLocal m_swerveLocal;
     private final StateSE2Logger m_log_state;
@@ -53,6 +55,11 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         m_players = m_swerveLocal.players();
         LogPoller.register(this::log);
         stop();
+    }
+
+    @Override
+    public ImmutableSwerveHistory update(double timestamp) {
+        return m_estimate.update(timestamp);
     }
 
     ////////////////
@@ -105,8 +112,9 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     }
 
     /** Empty the pose history, add the given pose, and flush the cache. */
-    public void resetPose(Pose2d robotPose, IsotropicNoiseSE2 noise) {
-        m_estimate.reset(robotPose, noise);
+    @Override
+    public void reset(double timestampS, NoisyStateSE2 state) {
+        m_estimate.reset(timestampS, state);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -117,17 +125,18 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     /** Sample the state at the current time. */
     @Override
     public StateSE2 getState() {
-        return getState(Takt.get());
+        return getState(Takt.get()).state();
     }
 
     /** Sample the past state at the specified time. */
-    public StateSE2 getState(double timeSec) {
-        return m_estimate.get(timeSec);
+    @Override
+    public NoisyStateSE2 getState(double timeSec) {
+        return m_estimate.getState(timeSec);
     }
 
-    /** Tags outside this radius are ignored. */
-    public void setHeedRadiusM(double heedRadiusM) {
-        m_estimate.setHeedRadiusM(heedRadiusM);
+    @Override
+    public Map<Double, NoisyStateSE2> all() {
+        return m_estimate.all();
     }
 
     ///////////////////////////////////////////////////////////////

@@ -1,13 +1,14 @@
 package org.team100.lib.localization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
 import org.team100.lib.camera.Camera;
+import org.team100.lib.localization.fused.AprilTagTranslator;
+import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
+import org.team100.lib.localization.network.Blip;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -28,10 +29,7 @@ class AprilTagRobotLocalizerPerformanceTest {
         // robot is panned right 45, translation is ignored.
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
-        MockVisionUpdater visionUpdater = new MockVisionUpdater();
-
-        AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, layout, visionUpdater, () -> Optional.of(Alliance.Red));
+        AprilTagTranslator m_translator = new AprilTagTranslator(logger, layout, () -> Optional.of(Alliance.Red));
 
         // camera sees the tag straight ahead in the center of the frame,
         // but rotated pi/4 to the left. this is ignored anyway.
@@ -54,13 +52,6 @@ class AprilTagRobotLocalizerPerformanceTest {
         Camera camera = Camera.UNKNOWN;
         // run forever so i can use the profiler
         while (true)
-            localizer.perValue(
-                    camera, blips);
+            m_translator.convert(camera, blips);
     }
-
-    @Test
-    void testNothing() {
-        assertTrue(true);
-    }
-
 }

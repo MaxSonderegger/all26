@@ -3,14 +3,17 @@ package org.team100.lib.subsystems.swerve.kinodynamics.limiter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.se2.VelocitySE2;
-import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
-import org.team100.lib.localization.FusedEstimator;
+import org.team100.lib.localization.fused.AprilTagCornerReader;
+import org.team100.lib.localization.fused.FusedEstimator;
+import org.team100.lib.localization.fused.NudgingVisionEstimator;
+import org.team100.lib.localization.fused.OdometryEstimator;
+import org.team100.lib.localization.fused.UpdatedEstimate;
+import org.team100.lib.localization.map.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -33,6 +36,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class SimulatedDrivingTest implements Timeless {
     private static final boolean DEBUG = false;
@@ -53,15 +57,30 @@ public class SimulatedDrivingTest implements Timeless {
         swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
-        UnaryOperator<Twist2d> odometryNoise = UnaryOperator.identity();
+        AprilTagCornerReader tagReader = new AprilTagCornerReader(
+                logger, layout, DriverStation::getAlliance);
+        OdometryEstimator odometryEstimate = new OdometryEstimator(
+                logger,
+                swerveKinodynamics,
+                gyro.white_noise(),
+                gyro.bias_noise(),
+                false,
+                false);
+        NudgingVisionEstimator visionEstimate = new NudgingVisionEstimator(logger);
 
         FusedEstimator estimate = new FusedEstimator(
-                logger, fieldLogger, swerveKinodynamics, odometryNoise, layout, gyro, swerveLocal);
+                Takt.get(),
+                gyro::getYawNWU,
+                swerveLocal::positions,
+                tagReader::read,
+                odometryEstimate,
+                visionEstimate);
+
         limiter = new SwerveLimiter(logger, swerveKinodynamics, () -> 12);
 
         drive = new SwerveDriveSubsystem(
                 logger,
-                estimate,
+                new UpdatedEstimate(estimate),
                 swerveLocal);
     }
 
