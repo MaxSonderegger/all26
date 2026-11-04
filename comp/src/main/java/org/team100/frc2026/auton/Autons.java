@@ -132,11 +132,12 @@ public class Autons implements AutoCloseable {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new MajorDefenseRTrench(
+        m_autonChooser.add(new HStartIntakeOutake(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+        
     }
 
     public Command get() {
