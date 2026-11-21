@@ -41,6 +41,7 @@ public class Robot extends TimedRobot100 {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
+  private final RobotLog m_robotLog;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   boolean MOTOR = true;
 
@@ -50,11 +51,16 @@ public class Robot extends TimedRobot100 {
    * initialization code.
    */
   public Robot() {
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
     LoggerFactory log = Logging.root();
-    KrakenX44Motor motor = new KrakenX44Motor(log.name("motor"), TotalCurrentLog.m_logSupplyCurrent, new CanId(2), NeutralMode100.COAST, 
+
+    m_robotLog = new RobotLog(log);
+
+    KrakenX44Motor motor = new KrakenX44Motor(log.name("motor"), m_robotLog.totalCurrentLog(), new CanId(2), NeutralMode100.COAST, 
     MotorPhase.FORWARD, new CurrentLimit(10,10), new Friction(0, 0, 0, 0), PIDConstants.zero());
 
   }
